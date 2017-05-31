@@ -7,11 +7,8 @@ void printArray(int arr[], int n)
        printf("%d ", arr[i]);
    printf("\n");
 }
-
-int main()
+void insertion_sort(int arr[],int n)
 {
-	int arr[]={10,3,5,20,24,9};
-	int n=sizeof(arr)/sizeof(int);
 	int i,j;
 	for(i=1;i<n;i++)
 	{
@@ -20,6 +17,13 @@ int main()
 			arr[j+1]=arr[j];
 		arr[j+1]=key;
 	}
+}
+
+int main()
+{
+	int arr[]={10,3,5,20,24,9};
+	int n=sizeof(arr)/sizeof(int);
+	insertion_sort(arr,n);
 	printArray(arr,n);
 
 	return 0;
