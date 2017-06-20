@@ -21,8 +21,8 @@ int binary_search(int a[],int n,int sch)
 
 int main()
 {
-	int arr[]={10,3,5,20,24,9};
+	int arr[]={2,5,9,10,24,27,36};
 	int n=sizeof(arr)/sizeof(int);
-	printf("%d",binary_search(arr,n,24));
+	printf("%d",binary_search(arr,n,10));
 	return 0;
 }
