@@ -10,3 +10,5 @@
 * Quick Sort
 * Count Sort
 * Radix Sort
+* Shell Sort
+* Comb Sort
