@@ -26,6 +26,7 @@ int main()
 		scanf("%d",&e1);
 		scanf("%d",&e2);
 		adj_matrix[e1-1][e2-1]=1;
+		adj_matrix[e2-1][e1-1]=1;
 		NODE * head = graph[e1-1];
 		while(head->next!=NULL)
 		{
