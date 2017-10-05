@@ -1,60 +1,46 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-int main(int argc, char const *argv[])
+#include<stdio.h>
+#include<string.h>
+#define siz 500
+int tabs[siz];
+void shifttable(char p[])
 {
-    char string[300];
-    char sub[50];
-    gets(string);
-    gets(sub);
-    int i,j,k,pos=-1;
-    int ht[27];
-    int str_len=strlen(string);
-    int sub_len = strlen(sub);
-    memset(ht,0,sizeof(ht));
-    for(i=sub_len-2;i>=0;i--)
-    {
-        if(ht[sub[i]-97]==0)
-            ht[sub[i]-97]=sub_len-i-1;
-    }
-    for(i=0;i<27;i++)
-        {
-            if(ht[i]!=0)
-            printf("%d\n",ht[i]);
-        else
-            ht[i]=sub_len;
-    }
-    int count=0;
-    for(i=sub_len-1;i<str_len;)
-    {
-        int k=i;
-        if(sub[sub_len-1]==string[i])
-        {
-            for(j=sub_len-1;j>=0;j--)
-            {
-                if(sub[j]==string[k])
-                {
-                    count++;
-                    k--;
-                }
-                else
-                {
-                    i=i+ht[sub[sub_len-1]];
-                    break;
-                }
-            }
-        }
-        else
-        {
-            i=i+ht[string[i]-97];
-        }
-        if(count==sub_len)
-            {
-                printf("pattern found\n");
-                break;
-            }
-        else
-            count=0;
-    }
-    return 0;
+ int i,j,m;
+ m=strlen(p);
+ for(i=0;i<siz;i++)
+  tabs[i]=m;
+ for(j=0;j<m-1;j++)
+  tabs[p[j]]=m-1-j;
+}
+int horspool(char t[],char p[])
+{
+ int i,j,k,m,n;
+ n=strlen(t);
+ m=strlen(p);
+ i=m-1;
+ while(i<n)
+ {
+  k=0;
+  while((k<m)&&(p[m-1-k]==t[i-k]))
+   k++;
+  if(k==m)
+   return(i-m+1);
+  else
+   i+=tabs[t[i]];
+ }
+ return -1;
+}
+void main()
+{
+ char t[100],p[100];
+ int pos;
+ printf("Enter the text\n");
+ gets(t);
+ printf("Enter the pattern\n");
+ gets(p);
+ shifttable(p);
+ pos=horspool(t,p);
+ if(pos>=0)
+  printf("pattern found starting from position %d\n",pos+1);
+ else
+  printf("The pattern was not found\n");
 }
