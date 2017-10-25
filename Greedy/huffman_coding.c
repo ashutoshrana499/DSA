@@ -1,88 +1,123 @@
-// C++ program for Huffman Coding
-#include <bits/stdc++.h>
-using namespace std;
+#include <stdio.h>
+#include <string.h>
  
-// A Huffman tree node
-struct MinHeapNode
+typedef struct node_t {
+	struct node_t *left, *right;
+	int freq;
+	char c;
+} *node;
+ 
+struct node_t pool[256] = {{0}};
+node qqq[255], *q = qqq - 1;
+int n_nodes = 0, qend = 1;
+char *code[128] = {0}, buf[1024];
+ 
+node new_node(int freq, char c, node a, node b)
 {
-    char data;                // One of the input characters
-    unsigned freq;             // Frequency of the character
-    MinHeapNode *left, *right; // Left and right child
- 
-    MinHeapNode(char data, unsigned freq)
-    {
-        left = right = NULL;
-        this->data = data;
-        this->freq = freq;
-    }
-};
- 
-// For comparison of two heap nodes (needed in min heap)
-struct compare
-{
-    bool operator()(MinHeapNode* l, MinHeapNode* r)
-    {
-        return (l->freq > r->freq);
-    }
-};
- 
-// Prints huffman codes from the root of Huffman Tree.
-void printCodes(struct MinHeapNode* root, string str)
-{
-    if (!root)
-        return;
- 
-    if (root->data != '$')
-        cout << root->data << ": " << str << "\n";
- 
-    printCodes(root->left, str + "0");
-    printCodes(root->right, str + "1");
+	node n = pool + n_nodes++;
+	if (freq) n->c = c, n->freq = freq;
+	else {
+		n->left = a, n->right = b;
+		n->freq = a->freq + b->freq;
+	}
+	return n;
 }
  
-// The main function that builds a Huffman Tree and
-// print codes by traversing the built Huffman Tree
-void HuffmanCodes(char data[], int freq[], int size)
+/* priority queue */
+void qinsert(node n)
 {
-    struct MinHeapNode *left, *right, *top;
- 
-    // Create a min heap & inserts all characters of data[]
-    priority_queue<MinHeapNode*, vector<MinHeapNode*>, compare> minHeap;
-    for (int i = 0; i < size; ++i)
-        minHeap.push(new MinHeapNode(data[i], freq[i]));
- 
-    // Iterate while size of heap doesn't become 1
-    while (minHeap.size() != 1)
-    {
-        // Extract the two minimum freq items from min heap
-        left = minHeap.top();
-        minHeap.pop();
- 
-        right = minHeap.top();
-        minHeap.pop();
- 
-        // Create a new internal node with frequency equal to the
-        // sum of the two nodes frequencies. Make the two extracted
-        // node as left and right children of this new node. Add
-        // this node to the min heap
-        // '$' is a special value for internal nodes, not used
-        top = new MinHeapNode('$', left->freq + right->freq);
-        top->left = left;
-        top->right = right;
-        minHeap.push(top);
-    }
- 
-    // Print Huffman codes using the Huffman tree built above
-    printCodes(minHeap.top(), "");
+	int j, i = qend++;
+	while ((j = i / 2)) {
+		if (q[j]->freq <= n->freq) break;
+		q[i] = q[j], i = j;
+	}
+	q[i] = n;
 }
  
-// Driver program to test above functions
-int main()
+node qremove()
 {
-    char arr[] = { 'a', 'b', 'c', 'd', 'e', 'f' };
-    int freq[] = { 5, 9, 12, 13, 16, 45 };
-    int size = sizeof(arr) / sizeof(arr[0]);
+	int i, l;
+	node n = q[i = 1];
  
-    HuffmanCodes(arr, freq, size);
+	if (qend < 2) return 0;
+	qend--;
+	while ((l = i * 2) < qend) {
+		if (l + 1 < qend && q[l + 1]->freq < q[l]->freq) l++;
+		q[i] = q[l], i = l;
+	}
+	q[i] = q[qend];
+	return n;
+}
  
-    return 0;
+/* walk the tree and put 0s and 1s */
+void build_code(node n, char *s, int len)
+{
+	static char *out = buf;
+	if (n->c) {
+		s[len] = 0;
+		strcpy(out, s);
+		code[n->c] = out;
+		out += len + 1;
+		return;
+	}
+ 
+	s[len] = '0'; build_code(n->left,  s, len + 1);
+	s[len] = '1'; build_code(n->right, s, len + 1);
+}
+ 
+void init(const char *s)
+{
+	int i, freq[128] = {0};
+	char c[16];
+ 
+	while (*s) freq[(int)*s++]++;
+ 
+	for (i = 0; i < 128; i++)
+		if (freq[i]) qinsert(new_node(freq[i], i, 0, 0));
+ 
+	while (qend > 2) 
+		qinsert(new_node(0, 0, qremove(), qremove()));
+ 
+	build_code(q[1], c, 0);
+}
+ 
+void encode(const char *s, char *out)
+{
+	while (*s) {
+		strcpy(out, code[*s]);
+		out += strlen(code[*s++]);
+	}
+}
+ 
+void decode(const char *s, node t)
+{
+	node n = t;
+	while (*s) {
+		if (*s++ == '0') n = n->left;
+		else n = n->right;
+ 
+		if (n->c) putchar(n->c), n = t;
+	}
+ 
+	putchar('\n');
+	if (t != n) printf("garbage input\n");
+}
+ 
+int main(void)
+{
+	int i;
+	const char *str = "abcdef";
+        char buf[1024];
+ 
+	init(str);
+	for (i = 0; i < 128; i++)
+		if (code[i]) printf("'%c': %s\n", i, code[i]);
+ 
+	encode(str, buf);
+	printf("encoded: %s\n", buf);
+ 
+	printf("decoded: ");
+	decode(buf, q[1]);
+ 
+	return 0;
 }
