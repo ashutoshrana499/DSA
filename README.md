@@ -8,6 +8,14 @@
 * Activity Selection
 * Huffman Coding
 
+### Graphs
+* adjacency list and matrix representation
+* DFS
+* BFS
+* Dijkstra
+* source removal
+* topological sorting
+
 ### Sorting
 * Selection Sort
 * Bubble Sort
