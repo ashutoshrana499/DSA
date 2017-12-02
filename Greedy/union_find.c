@@ -1,114 +1,65 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-// struct for edge in graph 
-struct edge
+typedef struct edge
 {
-	int src,dest;
-};
-
-//structure for the connected graph 
-struct graph
+	int src;
+	int dest;
+}edge;
+//get root of element i
+int arr[10];
+int root(int arr[ ],int i)
 {
-	// number of vertices and edges
-	int v,e;
-	//graph is an array of edges 
-	struct edge * edge;
-};
-//function to create graph with v vertices and e edges 
-struct graph * createGraph(int v,int e)
-{
-	struct graph* graph = (struct graph*) malloc( sizeof(struct graph) );
-	graph->v = v;
-	graph->e = e;
-	graph->edge = (struct edge *) malloc(graph->e *sizeof(struct edge));
-	return graph;
+    while(arr[ i ] != i)           
+     i = arr[ i ];
+    return i;
 }
-//finds subset of element i
-int find(int parent[],int i)
+//combines 2 disconnected components
+int union2(int arr[ ] ,int a ,int b)
 {
-	if(parent[i] == -1)
-		return i;
-	return find(parent,parent[i]);
+    int root_A = root(arr, a);       
+    int root_B = root(arr, b);  
+    arr[root_A] = root_B;   //set parent of root(A) as root(B)
 }
-void Union(int parent[],int x,int y)
+//find whether an edge from a to b exists
+int find(int a,int b)
 {
-	int xset = find(parent,x);
-	int yset = find(parent,y);
-	parent[xset] = yset;
+	if(root(arr,a)==root(arr,b))
+		return 1;
+	else
+		return 0;
 }
-
-int iscycle(struct graph * graph)
+void checkCycle(edge edges[],int e,int visited[])
 {
-	int * parent = (int*) malloc(graph->v * sizeof(int));
-	//initialisation of parent
-	// no idea lol
-	memset(parent, -1, sizeof(int) * graph->v);
-	for(int i = 0; i < graph->e; ++i)
-    {
-        int x = find(parent, graph->edge[i].src);
-        int y = find(parent, graph->edge[i].dest);
- 
-        if (x == y)
-            return 1;
- 
-        Union(parent, x, y);
-    }
-    return 0;
+	for(int i=0;i<e;i++)
+	{
+		if(visited[i]==0)
+		{
+			if(find(edges[i].src,edges[i].dest))
+			{
+				printf("cycle detected\n");
+				return;
+			}
+			else
+				union2(arr,edges[i].src,edges[i].dest);
+		}
+	}
+	printf("no cycle\n");
 }
-
 int main(int argc, char const *argv[])
 {
-	/* Let us create following graph
-         0
-        |  \
-        |    \
-        1-----2 
-        */
-    int V = 3, E = 3;
-    struct graph* graph = createGraph(V, E);
- 
-    // add edge 0-1
-    graph->edge[0].src = 0;
-    graph->edge[0].dest = 1;
- 
-    // add edge 1-2
-    graph->edge[1].src = 1;
-    graph->edge[1].dest = 2;
- 
-    // add edge 0-2
-    graph->edge[2].src = 0;
-    graph->edge[2].dest = 2;
- 
-    if (iscycle(graph))
-        printf( "graph contains cycle" );
-    else
-        printf( "graph doesn't contain cycle" );
- 	
-
- 	/* Let us create following graph
- 	0--1--2--3
-         
-    int V = 4, E = 3;
-    struct graph* graph = createGraph(V, E);
- 
-    // add edge 0-1
-    graph->edge[0].src = 0;
-    graph->edge[0].dest = 1;
- 
-    // add edge 1-2
-    graph->edge[1].src = 1;
-    graph->edge[1].dest = 2;
-
-    // add edge 2-3
-    graph->edge[2].src = 2;
-    graph->edge[2].dest = 3;
- 
-    if (iscycle(graph))
-        printf( "graph contains cycle" );
-    else
-        printf( "graph doesn't contain cycle" );*/
- 
+	int i,j;
+	int v,e;
+	scanf("%d%d",&v,&e);
+	edge edges[e];
+	for(i=0;i<e;i++)
+		scanf("%d%d",&edges[i].src,&edges[i].dest);
+	int visited[e];
+	memset(visited,0,sizeof(visited));
+	//array to store parent of current node
+	//init
+	for(i=0;i<v;i++)
+		arr[i]=i;
+	checkCycle(edges,e,visited);
 	return 0;
 }

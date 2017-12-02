@@ -5,3 +5,5 @@
 * Dijkstra
 * source removal
 * topological sorting
+* kruskal
+* union find
