@@ -32,8 +32,6 @@ void display(node * list)
 		}
 	printf("\n");
 }
-//1->2->3->4->5->NULL
-//
 void reverse(node** list)
 {
      node* prev   = NULL;
