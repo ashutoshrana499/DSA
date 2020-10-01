@@ -1,0 +1,78 @@
+import java.lang.*;
+
+class DriverClass
+{
+    public static void main (String[] args) {
+        Scanner sc = new Scanner(System.in);
+        int t = sc.nextInt();
+        
+        while(t-- > 0)
+        {
+            ArrayList<ArrayList<Integer>> list = new ArrayList<>();
+            int nov = sc.nextInt();
+            int edg = sc.nextInt();
+            
+            for(int i = 0; i < nov; i++)
+                list.add(i, new ArrayList<Integer>());
+                
+            for(int i = 1; i <= edg; i++)
+            {
+                int u = sc.nextInt();
+                int v = sc.nextInt();
+                list.get(u).add(v);
+                list.get(v).add(u);
+            }
+            int x = sc.nextInt();
+            if(x>= nov)
+		        System.out.println("-1");
+		    else
+		        System.out.println(new Level_of_Nodes().levels(list, 0, x));
+        }
+    }
+}// } Driver Code Ends
+
+
+/*
+ArrayList<ArrayList<Integer>> list: to represent graph containing vertices
+                                    and edges between them
+x: starting vertex of graph
+in: represent vertex whose level we have to find
+*/
+class Level_of_Nodes
+{
+    
+    static int levels(ArrayList<ArrayList<Integer>> list, int x, int in)
+    {
+        int level[] = new int[100001];
+        boolean visited[] = new boolean[100001];
+    
+        Arrays.fill(level, 0);
+    
+        Queue<Integer> q = new LinkedList<>();
+        q.add(x);               // Add the current node to queue
+    
+        visited[x] = true;      // Mark the current node as visited 
+        level[x] = 0;           // The level of current node is zero. (root node)
+    
+        while(!q.isEmpty()){    // Keep on running the loop till queue is empty
+        
+            x = q.peek();       // Get the front of the queue
+        
+            q.poll();           
+        
+            for(int i = 0;i<list.get(x).size();i++){    // Run loop for the adjacent nodes of the current front 
+                int b = list.get(x).get(i);             
+            
+                if(!visited[b]){        // If node is not visited
+                    q.add(b);           // Add the node to the queue
+                    level[b] = level[x]+1;  // Increase the level of adjacent node by 1 from the current node 
+                    visited[b] = true;      // Mark the visited node as true for the current node
+                }
+            
+            }
+        
+        }
+    
+        return level[in];
+    }
+}
